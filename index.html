@@ -72,6 +72,11 @@
             { name: 'Movers & Shakers', icon: <UserGroupIcon />, emoji: '👥' },
             { name: 'Ethics & Governance', icon: <ScaleIcon />, emoji: '⚖️' },
         ];
+        
+        const fallbackData = [
+            { id: 1, category: 'Top Headlines', title: "Error Fetching Live News", summary: "There was a problem fetching the latest articles. Displaying static fallback content. Please try refreshing the page.", source: "AI News Hub", link: "#", date: "2025-07-31" },
+            { id: 2, category: 'Industry Deep Dives', title: "Static Content Example", summary: "This is a sample article shown when the live news feed is unavailable. It demonstrates the layout and functionality of the news hub.", source: "AI News Hub", link: "#", date: "2025-07-31" }
+        ];
 
         // --- Components ---
         const getCategoryIcon = (categoryName) => {
@@ -130,9 +135,9 @@
         );
 
         const ErrorMessage = ({ message }) => (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                <strong className="font-bold">Oops!</strong>
-                <span className="block sm:inline ml-2">{message}</span>
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+                <strong className="font-bold">Oops! </strong>
+                <span className="block sm:inline">{message}</span>
             </div>
         );
 
@@ -151,7 +156,7 @@
                     setError(null);
 
                     const today = new Date().toDateString();
-                    const prompt = `Generate a JSON array of 10 recent, globally diverse AI news articles from today, ${today}. The JSON should be an array of objects, where each object has these exact keys: "id" (unique integer), "category" (one of: 'Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', 'Ethics & Governance'), "title" (string), "summary" (string, 2-3 sentences), "source" (string, e.g., 'TechCrunch'), "link" (string, a valid but placeholder URL), and "date" (string, in 'YYYY-MM-DD' format). Ensure the content is realistic and varied.`;
+                    const prompt = `Provide a JSON array of 10 recent and diverse AI news articles from today, ${today}. Each object must include: an integer 'id', a 'category' ('Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', or 'Ethics & Governance'), a 'title', a 2-sentence 'summary', a 'source' name, a placeholder 'link' URL, and a 'date' in 'YYYY-MM-DD' format.`;
                     
                     const payload = {
                         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -187,7 +192,9 @@
                         });
 
                         if (!response.ok) {
-                            throw new Error(`API error: ${response.statusText}`);
+                            const errorBody = await response.text();
+                            console.error("API Response Error:", errorBody);
+                            throw new Error(`Failed to fetch news. Status: ${response.status}`);
                         }
 
                         const result = await response.json();
@@ -196,14 +203,12 @@
                             const newsArray = JSON.parse(result.candidates[0].content.parts[0].text);
                             setAllNewsData(newsArray);
                         } else {
-                            throw new Error("Could not parse news from API response.");
+                            throw new Error("Could not parse news from the API response.");
                         }
                     } catch (err) {
-                        setError(err.message);
-                        // Fallback to static data on error
-                        setAllNewsData([
-                            { id: 1, category: 'Top Headlines', title: "Error Fetching News", summary: "Could not fetch live news. Displaying static content.", source: "AI News Hub", link: "#", date: new Date().toISOString().split('T')[0] }
-                        ]);
+                        console.error("API Fetch Error:", err);
+                        setError("Could not fetch live news. Displaying fallback content.");
+                        setAllNewsData(fallbackData);
                     } finally {
                         setIsLoading(false);
                     }
@@ -247,10 +252,9 @@
                         </header>
 
                         <main>
+                             {error && <ErrorMessage message={error} />}
                             {isLoading ? (
                                 <LoadingSpinner />
-                            ) : error ? (
-                                <ErrorMessage message={error} />
                             ) : (
                                 <>
                                     {featuredArticle && <FeaturedCard item={featuredArticle} />}
