@@ -20,6 +20,17 @@
             position: -webkit-sticky;
             position: sticky;
         }
+        /* Custom scrollbar for better mobile look */
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -185,12 +196,12 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div className="mt-4 flex flex-wrap gap-2">
+                                <div className="mt-4 flex gap-2 overflow-x-auto whitespace-nowrap pb-2 horizontal-scroll">
                                     {categories.map(category => (
                                         <button
                                             key={category.name}
                                             onClick={() => setActiveCategory(category.name)}
-                                            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                                            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex-shrink-0 ${
                                                 activeCategory === category.name 
                                                 ? 'bg-indigo-600 text-white shadow-lg' 
                                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
