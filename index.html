@@ -20,14 +20,6 @@
             position: -webkit-sticky;
             position: sticky;
         }
-        /* Hide scrollbar but keep functionality */
-        .horizontal-scroll {
-           -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .horizontal-scroll::-webkit-scrollbar {
-            display: none; /* For Chrome, Safari, and Opera */
-        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -193,7 +185,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div className="mt-4 flex gap-2 overflow-x-auto whitespace-nowrap pb-2 horizontal-scroll">
+                                
+                                {/* --- Category Filters --- */}
+                                {/* Buttons for medium screens and up */}
+                                <div className="mt-4 hidden md:flex flex-wrap gap-2">
                                     {categories.map(category => (
                                         <button
                                             key={category.name}
@@ -208,6 +203,23 @@
                                             {category.name}
                                         </button>
                                     ))}
+                                </div>
+
+                                {/* Dropdown for mobile screens */}
+                                <div className="mt-4 md:hidden">
+                                    <label htmlFor="category-select" className="sr-only">Select a category</label>
+                                    <select
+                                        id="category-select"
+                                        className="w-full p-2 border rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500"
+                                        value={activeCategory}
+                                        onChange={(e) => setActiveCategory(e.target.value)}
+                                    >
+                                        {categories.map(category => (
+                                            <option key={category.name} value={category.name}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
