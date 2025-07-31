@@ -74,7 +74,7 @@
         ];
         
         const fallbackData = [
-            { id: 1, category: 'Top Headlines', title: "Error Fetching Live News", summary: "There was a problem fetching the latest articles. Displaying static fallback content. Please try refreshing the page.", source: "AI News Hub", link: "#", date: "2025-07-31" },
+            { id: 1, category: 'Top Headlines', title: "Error Fetching Live News", summary: "There was a problem fetching the latest articles. Displaying static fallback content. Please try again.", source: "AI News Hub", link: "#", date: "2025-07-31" },
             { id: 2, category: 'Industry Deep Dives', title: "Static Content Example", summary: "This is a sample article shown when the live news feed is unavailable. It demonstrates the layout and functionality of the news hub.", source: "AI News Hub", link: "#", date: "2025-07-31" }
         ];
 
@@ -159,8 +159,7 @@
                 setIsLoading(true);
                 setError(null);
 
-                const today = new Date().toDateString();
-                const prompt = `Provide a JSON array of 10 recent and diverse AI news articles from today, ${today}. Each object must include: an integer 'id', a 'category' ('Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', or 'Ethics & Governance'), a 'title', a 2-sentence 'summary', a 'source' name, a placeholder 'link' URL, and a 'date' in 'YYYY-MM-DD' format.`;
+                const prompt = `Generate a JSON array of 10 recent AI news articles. Each object must have keys: "id" (integer), "category" (string from 'Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', 'Ethics & Governance'), "title" (string), "summary" (string), "source" (string), "link" (string URL), and "date" (string 'YYYY-MM-DD').`;
                 
                 const payload = {
                     contents: [{ role: "user", parts: [{ text: prompt }] }],
