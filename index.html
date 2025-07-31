@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Hub - Live & Auto-Updating</title>
+    <title>AI News Hub</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React Libraries -->
@@ -52,7 +52,7 @@
         const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>;
         const TagIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 012 10V5a1 1 0 011-1h5a1 1 0 01.707.293l7 7zM6 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>;
 
-        const { useState, useMemo, useEffect, useCallback } = React;
+        const { useState, useMemo, useEffect } = React;
 
         const categories = [
             { name: 'All', icon: null, emoji: '🌐' },
@@ -62,13 +62,22 @@
             { name: 'Ethics & Governance', icon: <ScaleIcon />, emoji: '⚖️' },
         ];
         
-        const staticNewsData = [
+        const allNewsData = [
             { id: 10, category: 'Top Headlines', title: "OpenAI Launches 'Stargate Norway', Its First AI Data Center in Europe", summary: "OpenAI is establishing its first European AI data center in Norway. The project aims to deliver 230MW of capacity and house 100,000 Nvidia GPUs by 2026.", source: "Capacity Media", link: "#", date: "2025-07-31" },
             { id: 11, category: 'Top Headlines', title: "Meta Signals Shift on AI, May Keep Future Models Closed Over Safety Risks", summary: "Mark Zuckerberg unveiled a vision for 'personal superintelligence' while signaling a strategic shift due to safety concerns around advanced AI.", source: "Dataconomy", link: "#", date: "2025-07-31" },
             { id: 12, category: 'Top Headlines', title: "Generative AI App Revenue Doubles, Downloads Hit 1.7 Billion in H1 2025", summary: "A new report shows explosive growth in the generative AI app market, with revenues nearly doubling and downloads reaching 1.7 billion in the first half of 2025.", source: "TECHi Innovations", link: "#", date: "2025-07-31" },
             { id: 13, category: 'Industry Deep Dives', title: "AI-Powered Climate Advisory Launched for Farmers in India", summary: "ICRISAT and ICAR have launched an AI-powered service to provide smallholder farmers with hyper-local, real-time climate advisories.", source: "Newsonair", link: "#", date: "2025-07-31" },
+            { id: 14, category: 'Industry Deep Dives', title: "Topcon Acquires IRIS to Boost AI Capabilities in Eye Care", summary: "Topcon Healthcare has acquired Intelligent Retinal Imaging Systems (IRIS), a leader in AI-assisted diabetic retinopathy screening.", source: "Ophthalmology Times", link: "#", date: "2025-07-30" },
+            { id: 15, category: 'Industry Deep Dives', title: "New 'White-Basilisk' AI Model Offers Greener Vulnerability Detection", summary: "Researchers have developed a compact and energy-efficient AI model named White-Basilisk for detecting software vulnerabilities.", source: "Help Net Security", link: "#", date: "2025-07-30" },
             { id: 16, category: 'Movers & Shakers', title: "Zuckerberg's 'Personal Superintelligence' Vision Drives Meta Stock Surge", summary: "Following a blowout quarterly earnings report, Meta's stock surged. CEO Mark Zuckerberg detailed his vision for 'personal superintelligence' integrated into AI glasses.", source: "AP News", link: "#", date: "2025-07-31" },
-            { id: 18, category: 'Ethics & Governance', title: "White House Greenlights Nvidia's H20 AI Chip Exports to China", summary: "In a significant policy decision, the White House has approved Nvidia's license to export its H20 AI chips to China to maintain the U.S. lead in chip development.", source: "Communications Today", link: "#", date: "2025-07-31" },
+            { id: 17, category: 'Movers & Shakers', title: "CreateAI to Unveil New AI Companions and Games at ChinaJoy 2025", summary: "AI company CreateAI is set to debut new products at ChinaJoy 2025, including an AI-powered virtual companion platform called 'Breath of You'.", source: "Laotian Times", link: "#", date: "2025-07-29" },
+            { id: 18, category: 'Ethics & Governance', title: "White House Greenlights Nvidia's H20 AI Chip Exports to China", summary: "In a significant policy decision, the White House has approved Nvidia's license to export its H20 AI chips to China to maintain the U.S. lead in chip development.", source: "Communications Today", link: "#", date: "2025-07-29" },
+            { id: 19, category: 'Ethics & Governance', title: "Global AI Governance Action Plan Proposed at World AI Conference", summary: "A new 'Global AI Governance Action Plan' was published following the World AI Conference, calling for international collaboration on AI development.", source: "China Embassy", link: "#", date: "2025-07-28" },
+            { id: 20, category: 'Top Headlines', title: "Google's New AI Can Summarize Entire Books", summary: "A breakthrough in large language models allows Google's latest AI to provide comprehensive summaries of full-length novels.", source: "The Verge", link: "#", date: "2025-07-28" },
+            { id: 21, category: 'Industry Deep Dives', title: "AI in Healthcare: Predicting Patient Outcomes with 95% Accuracy", summary: "A new study published in Nature showcases an AI model that can predict patient recovery trajectories with unprecedented accuracy.", source: "Nature Journal", link: "#", date: "2025-07-27" },
+            { id: 22, category: 'Movers & Shakers', title: "Renowned AI Ethicist Joins Anthropic's Board", summary: "Dr. Evelyn Reed, a leading voice in AI ethics, has joined the board of directors at Anthropic, signaling a strong commitment to responsible AI development.", source: "Reuters", link: "#", date: "2025-07-27" },
+            { id: 23, category: 'Ethics & Governance', title: "EU Finalizes AI Act, Setting Global Precedent", summary: "The European Union has passed the final version of its landmark AI Act, establishing comprehensive regulations for AI systems used within the bloc.", source: "BBC News", link: "#", date: "2025-07-26" },
+             { id: 24, category: 'Top Headlines', title: "Self-Driving Trucks Complete Cross-Country Journey Autonomously", summary: "A fleet of autonomous trucks has successfully completed a coast-to-coast trip in the US with zero human intervention, a major milestone for logistics.", source: "TechCrunch", link: "#", date: "2025-07-26" },
         ];
 
         // --- Components ---
@@ -120,75 +129,43 @@
             </div>
         );
 
+        const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+            if (totalPages <= 1) return null;
+
+            return (
+                <div className="flex items-center justify-between mt-8">
+                    <button
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Previous
+                    </button>
+                    <span className="text-sm text-gray-700">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next
+                    </button>
+                </div>
+            );
+        };
+
         const App = () => {
-            const [allNewsData, setAllNewsData] = useState(staticNewsData);
-            const [lastUpdated, setLastUpdated] = useState(new Date());
-            const [isUpdating, setIsUpdating] = useState(true);
             const [expandedCard, setExpandedCard] = useState(null);
             const [searchTerm, setSearchTerm] = useState('');
             const [activeCategory, setActiveCategory] = useState('All');
             const [sortBy, setSortBy] = useState('newest');
-
-            const fetchNews = useCallback(async () => {
-                setIsUpdating(true);
-                const prompt = `Generate a JSON array of 10 recent AI news articles. Each object must have keys: "id" (integer), "category" (string from 'Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', 'Ethics & Governance'), "title" (string), "summary" (string), "source" (string), "link" (string URL), and "date" (string 'YYYY-MM-DD').`;
-                
-                const payload = {
-                    contents: [{ role: "user", parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "id": { "type": "INTEGER" },
-                                    "category": { "type": "STRING" },
-                                    "title": { "type": "STRING" },
-                                    "summary": { "type": "STRING" },
-                                    "source": { "type": "STRING" },
-                                    "link": { "type": "STRING" },
-                                    "date": { "type": "STRING" }
-                                },
-                                required: ["id", "category", "title", "summary", "source", "link", "date"]
-                            }
-                        }
-                    }
-                };
-
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) throw new Error("API response was not ok.");
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
-                        const newsArray = JSON.parse(result.candidates[0].content.parts[0].text);
-                        setAllNewsData(newsArray);
-                        setLastUpdated(new Date());
-                    } else {
-                        throw new Error("Could not parse news from API response.");
-                    }
-                } catch (err) {
-                    console.error("Silent fetch error:", err);
-                } finally {
-                    setIsUpdating(false);
-                }
-            }, []);
+            const [currentPage, setCurrentPage] = useState(1);
+            const itemsPerPage = 5;
 
             useEffect(() => {
-                fetchNews(); // Fetch on initial load
-                const intervalId = setInterval(fetchNews, 300000); // Fetch every 5 minutes
-                return () => clearInterval(intervalId); // Cleanup on component unmount
-            }, [fetchNews]);
+                setCurrentPage(1);
+            }, [activeCategory, searchTerm, sortBy]);
 
             const toggleCard = (id) => {
                 setExpandedCard(expandedCard === id ? null : id);
@@ -206,12 +183,21 @@
                         const dateB = new Date(b.date);
                         return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
                     });
-            }, [allNewsData, searchTerm, activeCategory, sortBy]);
+            }, [searchTerm, activeCategory, sortBy]);
+
+            const totalPages = Math.ceil(filteredAndSortedNews.length / itemsPerPage);
+
+            const paginatedNews = useMemo(() => {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                return filteredAndSortedNews.slice(startIndex, endIndex);
+            }, [currentPage, filteredAndSortedNews]);
             
             const featuredArticle = useMemo(() => {
-                if (filteredAndSortedNews.length === 0) return null;
-                return filteredAndSortedNews[0];
-            }, [filteredAndSortedNews]);
+                if (allNewsData.length === 0) return null;
+                const sorted = [...allNewsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+                return sorted[0];
+            }, []);
 
             return (
                 <div className="bg-gray-50 min-h-screen">
@@ -225,7 +211,7 @@
                         </header>
 
                         <main>
-                            {featuredArticle ? <FeaturedCard item={featuredArticle} /> : <p>No news to display.</p>}
+                            {featuredArticle && <FeaturedCard item={featuredArticle} />}
 
                             {/* --- Controls --- */}
                             <div className="bg-white p-4 rounded-xl shadow-md mb-8 sticky top-4 z-10">
@@ -289,8 +275,8 @@
 
                             {/* --- News List --- */}
                             <div className="transition-opacity duration-300">
-                                 {filteredAndSortedNews.length > 0 ? (
-                                    filteredAndSortedNews.map(item => (
+                                 {paginatedNews.length > 0 ? (
+                                    paginatedNews.map(item => (
                                         <NewsCard key={item.id} item={item} expandedCard={expandedCard} toggleCard={toggleCard} />
                                     ))
                                 ) : (
@@ -300,13 +286,17 @@
                                     </div>
                                 )}
                             </div>
+
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                            />
                         </main>
                         
                         <footer className="text-center mt-12 text-gray-500 text-sm">
-                            <p>
-                                {isUpdating ? 'Updating news...' : `Last updated: ${lastUpdated.toLocaleTimeString()}`}
-                            </p>
-                            <p className="mt-1">&copy; 2025 AI News Hub. All rights reserved.</p>
+                            <p>&copy; 2025 AI News Hub. All rights reserved.</p>
+                            <p>News content is updated periodically.</p>
                         </footer>
                     </div>
                 </div>
