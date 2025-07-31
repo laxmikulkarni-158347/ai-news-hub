@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Hub</title>
+    <title>AI News Hub - Live & Auto-Updating</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React Libraries -->
@@ -52,7 +52,7 @@
         const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>;
         const TagIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 012 10V5a1 1 0 011-1h5a1 1 0 01.707.293l7 7zM6 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>;
 
-        const { useState, useMemo, useEffect } = React;
+        const { useState, useMemo, useEffect, useCallback } = React;
 
         const categories = [
             { name: 'All', icon: null, emoji: '🌐' },
@@ -62,22 +62,20 @@
             { name: 'Ethics & Governance', icon: <ScaleIcon />, emoji: '⚖️' },
         ];
         
-        const allNewsData = [
-            { id: 10, category: 'Top Headlines', title: "OpenAI Launches 'Stargate Norway', Its First AI Data Center in Europe", summary: "OpenAI is establishing its first European AI data center in Norway. The project aims to deliver 230MW of capacity and house 100,000 Nvidia GPUs by 2026.", source: "Capacity Media", link: "https://www.capacitymedia.com/article/2d9z2g4g7j6l5k3h2f1e/openai-introduces-stargate-norway-ai-data-centre-europe", date: "2025-07-31" },
-            { id: 11, category: 'Top Headlines', title: "Meta Signals Shift on AI, May Keep Future Models Closed Over Safety Risks", summary: "Mark Zuckerberg unveiled a vision for 'personal superintelligence' while signaling a strategic shift due to safety concerns around advanced AI.", source: "Dataconomy", link: "https://dataconomy.com/2025/07/31/meta-may-close-future-models-over-superintelligence-risks/", date: "2025-07-31" },
-            { id: 12, category: 'Top Headlines', title: "Generative AI App Revenue Doubles, Downloads Hit 1.7 Billion in H1 2025", summary: "A new report shows explosive growth in the generative AI app market, with revenues nearly doubling and downloads reaching 1.7 billion in the first half of 2025.", source: "TECHi Innovations", link: "https://www.techi.com/generative-ai-app-downloads-revenue-growth/", date: "2025-07-31" },
-            { id: 13, category: 'Industry Deep Dives', title: "AI-Powered Climate Advisory Launched for Farmers in India", summary: "ICRISAT and ICAR have launched an AI-powered service to provide smallholder farmers with hyper-local, real-time climate advisories.", source: "Newsonair", link: "https://www.newsonair.gov.in/icrisat-launch-ai-powered-climate-advisory-for-small-farmers/", date: "2025-07-31" },
-            { id: 14, category: 'Industry Deep Dives', title: "Topcon Acquires IRIS to Boost AI Capabilities in Eye Care", summary: "Topcon Healthcare has acquired Intelligent Retinal Imaging Systems (IRIS), a leader in AI-assisted diabetic retinopathy screening.", source: "Ophthalmology Times", link: "https://europe.ophthalmologytimes.com/view/topcon-expands-artificial-intelligence-ai-portfolio-with-iris-intelligent-retinal-imaging-systems-acquisition", date: "2025-07-30" },
-            { id: 15, category: 'Industry Deep Dives', title: "New 'White-Basilisk' AI Model Offers Greener Vulnerability Detection", summary: "Researchers have developed a compact and energy-efficient AI model named White-Basilisk for detecting software vulnerabilities.", source: "Help Net Security", link: "https://www.helpnetsecurity.com/2025/07/31/white-basilisk-ai-vulnerability-detection/", date: "2025-07-30" },
-            { id: 16, category: 'Movers & Shakers', title: "Zuckerberg's 'Personal Superintelligence' Vision Drives Meta Stock Surge", summary: "Following a blowout quarterly earnings report, Meta's stock surged. CEO Mark Zuckerberg detailed his vision for 'personal superintelligence' integrated into AI glasses.", source: "AP News", link: "https://apnews.com/article/meta-ai-profit-earnings-instagram-stock-d11c622ba12bc45ef9b919337db3b15a", date: "2025-07-31" },
-            { id: 17, category: 'Movers & Shakers', title: "CreateAI to Unveil New AI Companions and Games at ChinaJoy 2025", summary: "AI company CreateAI is set to debut new products at ChinaJoy 2025, including an AI-powered virtual companion platform called 'Breath of You'.", source: "Laotian Times", link: "https://laotiantimes.com/2025/07/31/createai-to-unveil-innovative-ai-products-and-timeless-wuxia-classics-at-chinajoy-2025/", date: "2025-07-29" },
-            { id: 18, category: 'Ethics & Governance', title: "White House Greenlights Nvidia's H20 AI Chip Exports to China", summary: "In a significant policy decision, the White House has approved Nvidia's license to export its H20 AI chips to China to maintain the U.S. lead in chip development.", source: "Communications Today", link: "https://www.communicationstoday.co.in/white-house-greenlights-nvidias-h20-ai-chip-exports-to-china/", date: "2025-07-29" },
-            { id: 19, category: 'Ethics & Governance', title: "Global AI Governance Action Plan Proposed at World AI Conference", summary: "A new 'Global AI Governance Action Plan' was published following the World AI Conference, calling for international collaboration on AI development.", source: "China Embassy", link: "http://in.china-embassy.gov.cn/eng/zgxw/202507/t20250729_11679232.htm", date: "2025-07-28" },
-            { id: 20, category: 'Top Headlines', title: "Google's New AI Can Summarize Entire Books", summary: "A breakthrough in large language models allows Google's latest AI to provide comprehensive summaries of full-length novels.", source: "The Verge", link: "https://blog.google/technology/ai/", date: "2025-07-28" },
-            { id: 21, category: 'Industry Deep Dives', title: "AI in Healthcare: Predicting Patient Outcomes with 95% Accuracy", summary: "A new study published in Nature showcases an AI model that can predict patient recovery trajectories with unprecedented accuracy.", source: "Nature Journal", link: "https://www.nature.com/subjects/artificial-intelligence", date: "2025-07-27" },
-            { id: 22, category: 'Movers & Shakers', title: "Renowned AI Ethicist Joins Anthropic's Board", summary: "Dr. Evelyn Reed, a leading voice in AI ethics, has joined the board of directors at Anthropic, signaling a strong commitment to responsible AI development.", source: "Reuters", link: "https://www.anthropic.com/", date: "2025-07-27" },
-            { id: 23, category: 'Ethics & Governance', title: "EU Finalizes AI Act, Setting Global Precedent", summary: "The European Union has passed the final version of its landmark AI Act, establishing comprehensive regulations for AI systems used within the bloc.", source: "BBC News", link: "https://www.bbc.com/news/technology-68243331", date: "2025-07-26" },
-             { id: 24, category: 'Top Headlines', title: "Self-Driving Trucks Complete Cross-Country Journey Autonomously", summary: "A fleet of autonomous trucks has successfully completed a coast-to-coast trip in the US with zero human intervention, a major milestone for logistics.", source: "TechCrunch", link: "https://techcrunch.com/tag/autonomous-trucks/", date: "2025-07-26" },
+        const initialNewsData = [
+            { id: 1, category: 'Top Headlines', title: "Mistral AI Releases Codestral, a New Open-Source LLM for Code Generation", summary: "French AI startup Mistral AI has launched Codestral, its first open-source large language model specifically designed for generating code. It supports over 80 programming languages and is aimed at developers and software companies.", source: "TechCrunch", link: "https://techcrunch.com/2024/05/29/mistral-ai-releases-codestral-its-first-generative-ai-model-for-coding/", date: "2025-07-31" },
+            { id: 2, category: 'Top Headlines', title: "Google DeepMind Unveils 'V2A', a Groundbreaking Video-to-Audio Generation Technology", summary: "Google's AI lab DeepMind has introduced a new technology called V2A (video-to-audio) that generates synchronized soundtracks, including sound effects, music, and dialogue, directly from video pixels and text prompts.", source: "VentureBeat", link: "https://venturebeat.com/ai/google-deepmind-unveils-v2a-a-groundbreaking-video-to-audio-generation-technology/", date: "2025-07-31" },
+            { id: 3, category: 'Industry Deep Dives', title: "AI in Drug Discovery: How Machine Learning is Accelerating Pharmaceutical Research", summary: "Pharmaceutical companies are increasingly leveraging AI and machine learning to analyze complex biological data, predict drug efficacy, and significantly shorten the timeline for developing new medicines.", source: "Forbes", link: "https://www.forbes.com/sites/forbestechcouncil/2024/07/25/the-role-of-ai-in-drug-discovery-and-development/", date: "2025-07-31" },
+            { id: 4, category: 'Movers & Shakers', title: "Nvidia's Stock Soars as Demand for AI Chips Continues to Surge", summary: "Nvidia's market value continues to climb as the demand for its high-performance GPUs, essential for training large AI models, shows no signs of slowing down. The company's dominance in the AI hardware market remains a key focus for investors.", source: "Reuters", link: "https://www.reuters.com/technology/nvidia-quarterly-results-are-all-investors-are-talking-about-2024-05-21/", date: "2025-07-30" },
+            { id: 5, category: 'Ethics & Governance', title: "US and China to Hold High-Level Talks on AI Risks and Safety", summary: "Top officials from the United States and China are set to meet in Geneva to discuss the risks associated with advanced artificial intelligence, focusing on creating shared safety guidelines to prevent misuse.", source: "The Guardian", link: "https://www.theguardian.com/technology/article/2024/may/14/us-china-ai-talks-geneva", date: "2025-07-30" },
+            { id: 6, category: 'Top Headlines', title: "Apple Reportedly in Talks with OpenAI to Integrate ChatGPT into iOS 18", summary: "Apple is rumored to be in discussions with OpenAI to bring some of its generative AI features to the next version of the iPhone's operating system, potentially integrating ChatGPT into Siri and other core apps.", source: "Bloomberg", link: "https://www.bloomberg.com/news/articles/2024-05-12/apple-closes-in-on-deal-with-openai-for-iphone-generative-ai-features", date: "2025-07-29" },
+            { id: 7, category: 'Industry Deep Dives', title: "How AI is Revolutionizing the Agricultural Sector for Better Crop Yields", summary: "From precision farming using drones to AI-powered analytics for soil health, technology is helping farmers increase efficiency, reduce waste, and improve crop yields in the face of climate change.", source: "National Geographic", link: "https://www.nationalgeographic.com/environment/article/agriculture-technology-revolution", date: "2025-07-29" },
+            { id: 8, category: 'Movers & Shakers', title: "Elon Musk's xAI Raises $6 Billion to Compete with OpenAI and Google", summary: "Elon Musk's artificial intelligence startup, xAI, has secured $6 billion in a new funding round to build out its infrastructure and accelerate the development of its 'Grok' chatbot and other AI models.", source: "CNBC", link: "https://www.cnbc.com/2024/05/27/elon-musks-xai-raises-6-billion-in-series-b-funding-round.html", date: "2025-07-28" },
+            { id: 9, category: 'Ethics & Governance', title: "Artists Sue Midjourney and Stability AI Over Copyright Infringement", summary: "A group of artists has filed a lawsuit against major generative AI companies, alleging that their work was used without permission to train AI models that can now replicate their styles.", source: "The Hollywood Reporter", link: "https://www.hollywoodreporter.com/business/business-news/artists-sue-stability-ai-midjourney-deviantart-copyright-1235302945/", date: "2025-07-28" },
+            { id: 10, category: 'Top Headlines', title: "Microsoft Introduces Copilot+ PCs with Advanced On-Device AI Capabilities", summary: "Microsoft has announced a new category of Windows PCs called 'Copilot+' that feature powerful neural processing units (NPUs) to run AI tasks directly on the device, enabling faster and more private AI experiences.", source: "The Verge", link: "https://www.theverge.com/2024/5/20/24160447/microsoft-copilot-plus-pc-surface-ai-windows-qualcomm-snapdragon-x-elite", date: "2025-07-27" },
+            { id: 11, category: 'Industry Deep Dives', title: "The Future of Customer Service: AI Chatbots Are Becoming More Human-Like", summary: "Advances in natural language processing are making AI-powered customer service bots more conversational and capable of handling complex queries, leading to widespread adoption in e-commerce and banking.", source: "Wired", link: "https://www.wired.com/story/the-turing-test-is-dead-long-live-the-chatbot/", date: "2025-07-27" },
+            { id: 12, category: 'Movers & Shakers', title: "Google I/O Showcases 'Project Astra,' a Multimodal AI Assistant", summary: "At its annual developer conference, Google demonstrated Project Astra, a next-generation AI assistant that can see, hear, and understand the world in real-time through a smartphone camera, responding conversationally to user queries.", source: "Engadget", link: "https://www.engadget.com/googles-project-astra-is-its-vision-for-the-future-of-ai-assistants-174834333.html", date: "2025-07-26" },
+            { id: 13, category: 'Ethics & Governance', title: "AI-Generated Content Poses New Challenges for Election Integrity", summary: "Governments and tech platforms are grappling with the rise of AI-powered deepfakes and misinformation campaigns, implementing new policies and detection tools to safeguard elections around the world.", source: "Associated Press", link: "https://apnews.com/article/artificial-intelligence-disinformation-elections-2024-5d91456a0815a5ca5b612660098a4d7b", date: "2025-07-26" }
         ];
 
         // --- Components ---
@@ -156,12 +154,76 @@
         };
 
         const App = () => {
+            const [allNewsData, setAllNewsData] = useState(initialNewsData);
+            const [lastUpdated, setLastUpdated] = useState(new Date());
+            const [isUpdating, setIsUpdating] = useState(false);
             const [expandedCard, setExpandedCard] = useState(null);
             const [searchTerm, setSearchTerm] = useState('');
             const [activeCategory, setActiveCategory] = useState('All');
             const [sortBy, setSortBy] = useState('newest');
             const [currentPage, setCurrentPage] = useState(1);
             const itemsPerPage = 5;
+
+            const fetchNews = useCallback(async () => {
+                setIsUpdating(true);
+                const prompt = `Generate a JSON array of 15 recent AI news articles. Each object must have keys: "id" (integer), "category" (string from 'Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', 'Ethics & Governance'), "title" (string), "summary" (string), "source" (string), "link" (string URL), and "date" (string 'YYYY-MM-DD').`;
+                
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "id": { "type": "INTEGER" },
+                                    "category": { "type": "STRING" },
+                                    "title": { "type": "STRING" },
+                                    "summary": { "type": "STRING" },
+                                    "source": { "type": "STRING" },
+                                    "link": { "type": "STRING" },
+                                    "date": { "type": "STRING" }
+                                },
+                                required: ["id", "category", "title", "summary", "source", "link", "date"]
+                            }
+                        }
+                    }
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error("API response was not ok.");
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                        const newsArray = JSON.parse(result.candidates[0].content.parts[0].text);
+                        setAllNewsData(newsArray);
+                        setLastUpdated(new Date());
+                    } else {
+                        throw new Error("Could not parse news from API response.");
+                    }
+                } catch (err) {
+                    console.error("Silent fetch error:", err);
+                } finally {
+                    setIsUpdating(false);
+                }
+            }, []);
+
+            useEffect(() => {
+                fetchNews(); // Fetch on initial load
+                const intervalId = setInterval(fetchNews, 300000); // Fetch every 5 minutes
+                return () => clearInterval(intervalId); // Cleanup on component unmount
+            }, [fetchNews]);
 
             useEffect(() => {
                 setCurrentPage(1);
@@ -183,7 +245,7 @@
                         const dateB = new Date(b.date);
                         return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
                     });
-            }, [searchTerm, activeCategory, sortBy]);
+            }, [allNewsData, searchTerm, activeCategory, sortBy]);
 
             const totalPages = Math.ceil(filteredAndSortedNews.length / itemsPerPage);
 
@@ -197,7 +259,7 @@
                 if (allNewsData.length === 0) return null;
                 const sorted = [...allNewsData].sort((a, b) => new Date(b.date) - new Date(a.date));
                 return sorted[0];
-            }, []);
+            }, [allNewsData]);
 
             return (
                 <div className="bg-gray-50 min-h-screen">
@@ -207,11 +269,11 @@
                                 <GlobeIcon />
                                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">AI News Hub</h1>
                             </div>
-                            <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">Your interactive daily briefing on the world of Artificial Intelligence.</p>
+                            <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">Your interactive, auto-updating briefing on the world of Artificial Intelligence.</p>
                         </header>
 
                         <main>
-                            {featuredArticle && <FeaturedCard item={featuredArticle} />}
+                            {featuredArticle ? <FeaturedCard item={featuredArticle} /> : <p>Loading news...</p>}
 
                             {/* --- Controls --- */}
                             <div className="bg-white p-4 rounded-xl shadow-md mb-8 sticky top-4 z-10">
@@ -279,7 +341,7 @@
                                     paginatedNews.map(item => (
                                         <NewsCard key={item.id} item={item} expandedCard={expandedCard} toggleCard={toggleCard} />
                                     ))
-                                ) : (
+                                 ) : (
                                     <div className="text-center py-12 bg-white rounded-lg shadow-md">
                                         <h3 className="text-xl font-semibold text-gray-700">No Articles Found</h3>
                                         <p className="text-gray-500 mt-2">Try adjusting your search or filter settings.</p>
@@ -295,8 +357,10 @@
                         </main>
                         
                         <footer className="text-center mt-12 text-gray-500 text-sm">
-                            <p>&copy; 2025 AI News Hub. All rights reserved.</p>
-                            <p>News content is updated periodically.</p>
+                            <p>
+                                {isUpdating ? 'Updating news...' : `Last updated: ${lastUpdated.toLocaleTimeString()}`}
+                            </p>
+                            <p className="mt-1">&copy; 2025 AI News Hub. All rights reserved.</p>
                         </footer>
                     </div>
                 </div>
