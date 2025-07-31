@@ -63,7 +63,7 @@
         const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>;
         const TagIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 012 10V5a1 1 0 011-1h5a1 1 0 01.707.293l7 7zM6 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>;
 
-        const { useState, useMemo, useEffect } = React;
+        const { useState, useMemo, useEffect, useCallback } = React;
 
         const categories = [
             { name: 'All', icon: null, emoji: '🌐' },
@@ -134,10 +134,15 @@
             </div>
         );
 
-        const ErrorMessage = ({ message }) => (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
-                <strong className="font-bold">Oops! </strong>
-                <span className="block sm:inline">{message}</span>
+        const ErrorMessage = ({ message, onRetry }) => (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6 flex items-center justify-between" role="alert">
+                <div>
+                    <strong className="font-bold">Oops! </strong>
+                    <span className="block sm:inline">{message}</span>
+                </div>
+                <button onClick={onRetry} className="px-4 py-1 text-sm font-medium rounded-md text-red-700 border border-red-700 hover:bg-red-200 transition-colors">
+                    Try Again
+                </button>
             </div>
         );
 
@@ -150,40 +155,41 @@
             const [activeCategory, setActiveCategory] = useState('All');
             const [sortBy, setSortBy] = useState('newest');
 
-            useEffect(() => {
-                const fetchNews = async () => {
-                    setIsLoading(true);
-                    setError(null);
+            const fetchNews = useCallback(async () => {
+                setIsLoading(true);
+                setError(null);
 
-                    const today = new Date().toDateString();
-                    const prompt = `Provide a JSON array of 10 recent and diverse AI news articles from today, ${today}. Each object must include: an integer 'id', a 'category' ('Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', or 'Ethics & Governance'), a 'title', a 2-sentence 'summary', a 'source' name, a placeholder 'link' URL, and a 'date' in 'YYYY-MM-DD' format.`;
-                    
-                    const payload = {
-                        contents: [{ role: "user", parts: [{ text: prompt }] }],
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "ARRAY",
-                                items: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        "id": { "type": "INTEGER" },
-                                        "category": { "type": "STRING" },
-                                        "title": { "type": "STRING" },
-                                        "summary": { "type": "STRING" },
-                                        "source": { "type": "STRING" },
-                                        "link": { "type": "STRING" },
-                                        "date": { "type": "STRING" }
-                                    },
-                                    required: ["id", "category", "title", "summary", "source", "link", "date"]
-                                }
+                const today = new Date().toDateString();
+                const prompt = `Provide a JSON array of 10 recent and diverse AI news articles from today, ${today}. Each object must include: an integer 'id', a 'category' ('Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', or 'Ethics & Governance'), a 'title', a 2-sentence 'summary', a 'source' name, a placeholder 'link' URL, and a 'date' in 'YYYY-MM-DD' format.`;
+                
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "id": { "type": "INTEGER" },
+                                    "category": { "type": "STRING" },
+                                    "title": { "type": "STRING" },
+                                    "summary": { "type": "STRING" },
+                                    "source": { "type": "STRING" },
+                                    "link": { "type": "STRING" },
+                                    "date": { "type": "STRING" }
+                                },
+                                required: ["id", "category", "title", "summary", "source", "link", "date"]
                             }
                         }
-                    };
+                    }
+                };
 
-                    const apiKey = "";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
+                let lastError = null;
+                for (let attempt = 0; attempt < 3; attempt++) {
                     try {
                         const response = await fetch(apiUrl, {
                             method: 'POST',
@@ -192,9 +198,7 @@
                         });
 
                         if (!response.ok) {
-                            const errorBody = await response.text();
-                            console.error("API Response Error:", errorBody);
-                            throw new Error(`Failed to fetch news. Status: ${response.status}`);
+                            throw new Error(`API returned status ${response.status}`);
                         }
 
                         const result = await response.json();
@@ -202,20 +206,28 @@
                         if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
                             const newsArray = JSON.parse(result.candidates[0].content.parts[0].text);
                             setAllNewsData(newsArray);
+                            setIsLoading(false);
+                            return; // Success, exit the function
                         } else {
                             throw new Error("Could not parse news from the API response.");
                         }
                     } catch (err) {
-                        console.error("API Fetch Error:", err);
-                        setError("Could not fetch live news. Displaying fallback content.");
-                        setAllNewsData(fallbackData);
-                    } finally {
-                        setIsLoading(false);
+                        lastError = err;
+                        console.warn(`Attempt ${attempt + 1} failed.`);
+                        await new Promise(res => setTimeout(res, 1000 * (attempt + 1))); // Wait before retrying
                     }
-                };
-
-                fetchNews();
+                }
+                
+                // If all retries fail
+                console.error("API Fetch Error after all retries:", lastError);
+                setError("Could not fetch live news. Displaying fallback content.");
+                setAllNewsData(fallbackData);
+                setIsLoading(false);
             }, []);
+
+            useEffect(() => {
+                fetchNews();
+            }, [fetchNews]);
 
             const toggleCard = (id) => {
                 setExpandedCard(expandedCard === id ? null : id);
@@ -252,11 +264,11 @@
                         </header>
 
                         <main>
-                             {error && <ErrorMessage message={error} />}
                             {isLoading ? (
                                 <LoadingSpinner />
                             ) : (
                                 <>
+                                    {error && <ErrorMessage message={error} onRetry={fetchNews} />}
                                     {featuredArticle && <FeaturedCard item={featuredArticle} />}
 
                                     {/* --- Controls --- */}
