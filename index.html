@@ -14,6 +14,11 @@
     <style>
         body {
             font-family: sans-serif;
+            scroll-behavior: smooth;
+        }
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
         }
     </style>
 </head>
@@ -22,8 +27,8 @@
 
     <script type="text/babel">
         // --- SVG Icons ---
-        const ChevronDownIcon = () => (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        const ChevronDownIcon = ({ isExpanded }) => (
+          <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
         );
@@ -39,6 +44,13 @@
                 <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
             </svg>
         );
+        
+        const NewspaperIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clipRule="evenodd" /><path d="M15 7h2v5h-2V7z" /></svg>;
+        const BuildingOfficeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2 0h2v2h-2V9zm2-4h-2v2h2V5z" clipRule="evenodd" /></svg>;
+        const UserGroupIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>;
+        const ScaleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" /></svg>;
+        const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>;
+        const TagIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 012 10V5a1 1 0 011-1h5a1 1 0 01.707.293l7 7zM6 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>;
 
         // --- Data ---
         const allNewsData = [
@@ -54,21 +66,27 @@
             { id: 19, category: 'Ethics & Governance', title: "Global AI Governance Action Plan Proposed at World AI Conference", summary: "A new 'Global AI Governance Action Plan' was published following the World AI Conference, calling for international collaboration on AI development. The plan emphasizes shared opportunities, innovation, and accelerating digital infrastructure, particularly for the Global South.", source: "China Embassy", link: "http://in.china-embassy.gov.cn/eng/zgxw/202507/t20250729_11679232.htm", date: "2025-07-29" },
         ];
 
-        const categories = ['All', 'Top Headlines', 'Industry Deep Dives', 'Movers & Shakers', 'Ethics & Governance'];
+        const categories = [
+            { name: 'All', icon: null },
+            { name: 'Top Headlines', icon: <NewspaperIcon /> },
+            { name: 'Industry Deep Dives', icon: <BuildingOfficeIcon /> },
+            { name: 'Movers & Shakers', icon: <UserGroupIcon /> },
+            { name: 'Ethics & Governance', icon: <ScaleIcon /> },
+        ];
 
         // --- Components ---
         const { useState, useMemo } = React;
 
         const FeaturedCard = ({ item }) => (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-indigo-200">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-indigo-200 hover:shadow-2xl transition-shadow duration-300">
                 <div className="p-6 md:p-8">
                     <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wider">Featured News</p>
                     <h2 className="mt-2 text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{item.title}</h2>
                     <p className="mt-4 text-gray-600">{item.summary}</p>
                     <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
                         <p className="text-sm text-gray-500">{item.source} &middot; {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                            Read More
+                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 hover:scale-105">
+                            Read More <ArrowRightIcon />
                         </a>
                     </div>
                 </div>
@@ -76,23 +94,25 @@
         );
 
         const NewsCard = ({ item, expandedCard, toggleCard }) => (
-            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 ease-in-out mb-4">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 ease-in-out mb-4 hover:scale-[1.02]">
                 <div className="p-6">
                     <div className="flex justify-between items-start cursor-pointer" onClick={() => toggleCard(item.id)}>
                         <div>
-                            <div className="tracking-wide text-xs text-indigo-500 font-semibold uppercase">{item.category}</div>
+                            <div className="inline-flex items-center tracking-wide text-xs text-indigo-500 font-semibold uppercase">
+                               <TagIcon /> {item.category}
+                            </div>
                             <h3 className="block mt-1 text-lg leading-tight font-medium text-black">{item.title}</h3>
                             <p className="mt-2 text-gray-500 text-sm">{item.source} &middot; {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         </div>
-                        <button className="text-gray-500 hover:text-gray-700 ml-4 flex-shrink-0">
-                            <ChevronDownIcon />
+                        <button className="text-gray-500 hover:text-gray-700 ml-4 flex-shrink-0 pt-1">
+                            <ChevronDownIcon isExpanded={expandedCard === item.id} />
                         </button>
                     </div>
                     {expandedCard === item.id && (
                         <div className="mt-4 border-t pt-4">
                             <p className="text-gray-600">{item.summary}</p>
-                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-indigo-600 hover:text-indigo-900 font-semibold">
-                                Read Full Article &rarr;
+                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center text-indigo-600 hover:text-indigo-900 font-semibold">
+                                Read Full Article <ArrowRightIcon />
                             </a>
                         </div>
                     )}
@@ -168,15 +188,16 @@
                                 <div className="mt-4 flex flex-wrap gap-2">
                                     {categories.map(category => (
                                         <button
-                                            key={category}
-                                            onClick={() => setActiveCategory(category)}
-                                            className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
-                                                activeCategory === category 
-                                                ? 'bg-indigo-600 text-white shadow' 
+                                            key={category.name}
+                                            onClick={() => setActiveCategory(category.name)}
+                                            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                                                activeCategory === category.name 
+                                                ? 'bg-indigo-600 text-white shadow-lg' 
                                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                             }`}
                                         >
-                                            {category}
+                                            {category.icon}
+                                            {category.name}
                                         </button>
                                     ))}
                                 </div>
