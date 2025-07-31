@@ -20,16 +20,13 @@
             position: -webkit-sticky;
             position: sticky;
         }
-        /* Custom scrollbar for better mobile look */
+        /* Hide scrollbar but keep functionality */
+        .horizontal-scroll {
+           -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
         .horizontal-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-        .horizontal-scroll::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
-        }
-        .horizontal-scroll::-webkit-scrollbar-track {
-            background: transparent;
+            display: none; /* For Chrome, Safari, and Opera */
         }
     </style>
 </head>
